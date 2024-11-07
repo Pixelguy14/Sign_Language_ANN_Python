@@ -85,4 +85,4 @@ def process_images_from_folders(base_path):
 # base_path is the folder where all the imagesets of the letters will be contained.
 # dataset5 contains 5 folders, A, B, C, D E, change the letter according to the csv
 # you'll be creating
-process_images_from_folders(base_path = 'A')
+process_images_from_folders(base_path = 'E')
