@@ -1,3 +1,9 @@
+'''
+pip install scikit-learn
+pip install pandas
+
+'''
+
 #Import library
 import pandas as pd
 
@@ -8,11 +14,16 @@ from sklearn.preprocessing import LabelEncoder #Used to convert categorical labe
 from sklearn.metrics import accuracy_score, classification_report #calculates the accuracy of the model, function that generates a 
                                                                 # report with various performance metrics
 
+#Import ONNX for save the trained model
+import skl2onnx
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
+
 #Specify the path to your CSV file
 data = pd.read_csv('hand_landmarks_total.csv')
 
 #Separate the labels and characteristics
-X = data.iloc[:, :-1] # All the columns except de lastone
+X = data.iloc[:, :-1] # All the columns except de last one
 y = data.iloc[:, -1] # The last one column 
 
 print("FILAS: ", y)
@@ -37,5 +48,17 @@ report = classification_report(y_test, y_pred, target_names=label_encoder.classe
 
 print("Precisión del modelo:", accuracy)
 print("\nReporte de clasificación:\n", report)
+print("Do you want to save this model? (Y/N): ")
+saveOption = input()
+if saveOption.lower() == 'y':
+    # Define el tipo de entrada para el modelo (aquí usamos el número de características de X)
+    initial_type = [('float_input', FloatTensorType([None, X.shape[1]]))]
 
+    # Convierte el modelo a ONNX
+    onnx_model = convert_sklearn(mlp, initial_types=initial_type)
 
+    # Guarda el modelo en un archivo .onnx
+    with open("trained_model.onnx", "wb") as f:
+        f.write(onnx_model.SerializeToString())
+
+    print("Model saved successfully")
