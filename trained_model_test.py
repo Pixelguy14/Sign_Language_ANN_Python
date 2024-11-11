@@ -21,7 +21,7 @@ input_name = sess.get_inputs()[0].name
 output_name = sess.get_outputs()[0].name
 
 # Load test data (test.csv needs to be a single-row csv file)
-data = pd.read_csv('test.csv', header=None) # header = None if there is not header for colum
+data = pd.read_csv('predict_landmarks.csv', header=None) # header = None if there is not header for colum
 X_test = data.iloc[:, :-1].values
 X_test = X_test.astype(np.float32)
 
