@@ -19,7 +19,8 @@ mp_drawing = mp.solutions.drawing_utils
 # Load model
 sess = rt.InferenceSession('trained_model.onnx')
 
-# Function to preprocess landmarks for the model
+# Function to preprocess landmarks for the model, 
+# turning them to array of float with one row and n ammount of collumns
 def preprocess_landmarks(hand_landmarks):
     landmarks = []
     for landmark in hand_landmarks.landmark:
@@ -29,7 +30,7 @@ def preprocess_landmarks(hand_landmarks):
     #print("Processed Landmarks:", processed_landmarks)
     return processed_landmarks
 
-# Function to predict hand gesture using updated approach
+# Function to predict hand gesture using approach similar to trained_model_test.py
 def predict_gesture(landmarks):
     input_name = sess.get_inputs()[0].name
     output_name = sess.get_outputs()[0].name
@@ -40,7 +41,7 @@ def predict_gesture(landmarks):
     #print("Predicted Label:", predicted_label)
     return predicted_label
 
-# # Number of class to letter label mapping
+# Number of class to letter label mapping
 labels = {
     0: "a", 1: "b", 2: "c", 3: "d", 4: "e", 5: "f", 6: "g",
     7: "h", 8: "i", 9: "k", 10: "l", 11: "m", 12: "n", 13: "o",
@@ -62,7 +63,7 @@ with mp_hands.Hands(
         ret, frame = cap.read()
         if not ret:
             break
-        # frame = cv2.flip(frame,1) # 1 horizontal flip
+        frame = cv2.flip(frame, 1) # 1  = horizontal flip ; 0 =  vertical flip
         # re_frame = cv2.resize(frame, (82,117)) # size of the training images
         # Convert the BGR image to RGB
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -76,12 +77,22 @@ with mp_hands.Hands(
                 mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
                 # Preprocess landmarks and predict gesture
+                # we turn the landmarks to a number array 
+                # then we process and change the prediction to corresponding label
                 landmarks = preprocess_landmarks(hand_landmarks)
                 gesture = predict_gesture(landmarks)
                 gesture_text = f"Gesture: {gesture}"
 
                 # Display the predicted gesture on the frame
-                cv2.putText(frame, gesture_text, (10, 30), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                # frame the text will be on
+                # text that's going to be displayed
+                # 10, 30 are the coords for the text
+                # font
+                # font scale (size)
+                # color in BGR
+                # thickness of the font
+                # antialliased text (smooth edges)
+                cv2.putText(frame, gesture_text, (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
 
         # Display the frame
         cv2.imshow('Hand Gesture Detection', frame)
