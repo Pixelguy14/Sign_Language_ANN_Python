@@ -1,6 +1,5 @@
 import multilayer_perceptron_training as mpt
 import sign_language_images_to_csv as slitc
-# import sign_language_prediction_real_time as slprt
 import sign_language_prediction_single_file as slpsf
 import onnxruntime as rt
 
@@ -36,7 +35,7 @@ def test_ANN():
     slpsf.predict_single_file(sess, './predict_landmarks.csv')
 
 def test_ANN_real_time():
-    print("Banana")
+    import sign_language_prediction_real_time
 
 while True:
     print("\n")
@@ -46,6 +45,7 @@ while True:
     print("2. Create and train a new ANN.")
     print("3. Load a trained ANN model.")
     print("4. Test loaded ANN model.")
+    print("5. Test loaded ANN model in real time.")
     print("Choose your option:")
     userAction = input()
 
@@ -55,7 +55,10 @@ while True:
         else:
             print("There is no loaded ANN model yet.")
     elif userAction == '4':
-        test_ANN()
+        if sess is not None:
+            test_ANN()
+        else:
+            print("There is no loaded ANN model yet.")
     elif userAction == '3':
         load_ANN()
     elif userAction == '2':
