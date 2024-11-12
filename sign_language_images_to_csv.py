@@ -12,7 +12,7 @@ import numpy as np
 import csv
 import os
 
-print(f"Current directory: {os.getcwd()}")
+# print(f"Current directory: {os.getcwd()}")
 
 # Initialize tools
 mp_hands = mp.solutions.hands
@@ -144,9 +144,9 @@ def process_image_from_route(path, image_name_to_predict):
 # base_path is the folder where all the imagesets of the letters will be contained.
 # dataset5 contains 5 folders, A, B, C, D E, change the letter according to the csv
 # you'll be creating
-###process_images_from_folders(base_path = 'C')
+# process_images_from_folders(base_path = 'C')
 
 # Run the processing to detect only the image in the prediction folder that has
 # a specific name
-process_image_from_route(path = 'prediction', image_name_to_predict = 'test01.png')
-print("DONE.")
+# process_image_from_route(path = 'prediction', image_name_to_predict = 'test01.png')
+# print("DONE.")

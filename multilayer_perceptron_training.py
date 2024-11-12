@@ -19,46 +19,49 @@ import skl2onnx
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 
-#Specify the path to your CSV file
-data = pd.read_csv('hand_landmarks_total.csv')
+def create_and_train(csv_path, test_size): # data must be a CSV file directory
+    # Read csv
+    data = pd.read_csv(csv_path)
+    #Separate the labels and characteristics
+    X = data.iloc[:, :-1] # All the columns except de last one
+    y = data.iloc[:, -1] # The last one column 
 
-#Separate the labels and characteristics
-X = data.iloc[:, :-1] # All the columns except de last one
-y = data.iloc[:, -1] # The last one column 
+    print("FILAS: ", y)
 
-print("FILAS: ", y)
+    # Encode the labels that are text to numbers
+    label_encoder = LabelEncoder()
+    y = label_encoder.fit_transform(y)
 
-# Encode the labels that are text to numbers
-label_encoder = LabelEncoder()
-y = label_encoder.fit_transform(y)
+    #Split data in sets of training and testing
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
-#Split data in sets of training and testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    #Create and train de neuronal network
+    mlp = MLPClassifier(hidden_layer_sizes=(64, 64), max_iter=500, activation='relu', solver='adam', random_state=42)
+    mlp.fit(X_train, y_train)
 
-#Create and train de neuronal network
-mlp = MLPClassifier(hidden_layer_sizes=(64, 64), max_iter=500, activation='relu', solver='adam', random_state=42)
-mlp.fit(X_train, y_train)
+    #Make prediccions in training set
+    y_pred = mlp.predict(X_test)
 
-#Make prediccions in training set
-y_pred = mlp.predict(X_test)
+    # Evaluate performance
+    accuracy = accuracy_score(y_test, y_pred)
+    report = classification_report(y_test, y_pred, target_names=label_encoder.classes_)
 
- # Evaluate performance
-accuracy = accuracy_score(y_test, y_pred)
-report = classification_report(y_test, y_pred, target_names=label_encoder.classes_)
+    print("Precisión del modelo:", accuracy)
+    print("\nReporte de clasificación:\n", report)
+    print("Do you want to save this model? (Y/N): ")
+    saveOption = input()
+    if saveOption.lower() == 'y':
+        # Define el tipo de entrada para el modelo (aquí usamos el número de características de X)
+        initial_type = [('float_input', FloatTensorType([None, X.shape[1]]))]
 
-print("Precisión del modelo:", accuracy)
-print("\nReporte de clasificación:\n", report)
-print("Do you want to save this model? (Y/N): ")
-saveOption = input()
-if saveOption.lower() == 'y':
-    # Define el tipo de entrada para el modelo (aquí usamos el número de características de X)
-    initial_type = [('float_input', FloatTensorType([None, X.shape[1]]))]
+        # Convierte el modelo a ONNX
+        onnx_model = convert_sklearn(mlp, initial_types=initial_type)
 
-    # Convierte el modelo a ONNX
-    onnx_model = convert_sklearn(mlp, initial_types=initial_type)
+        print("File name (DO NOT ADD EXTENSION FILE): ")
+        file_name = input()
 
-    # Guarda el modelo en un archivo .onnx
-    with open("trained_model.onnx", "wb") as f:
-        f.write(onnx_model.SerializeToString())
+        # Guarda el modelo en un archivo .onnx
+        with open(f"{file_name}.onnx", "wb") as f:
+            f.write(onnx_model.SerializeToString())
 
-    print("Model saved successfully")
+        print("Model saved successfully")
