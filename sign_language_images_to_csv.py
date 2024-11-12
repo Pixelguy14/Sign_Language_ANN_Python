@@ -12,7 +12,6 @@ import numpy as np
 import csv
 import os
 
-# print(f"Current directory: {os.getcwd()}")
 
 # Initialize tools
 mp_hands = mp.solutions.hands
@@ -20,7 +19,6 @@ mp_drawing = mp.solutions.drawing_utils
 
 # Save Landmarks to CSV
 def save_landmarks_to_csv(landmarks, folder_name, filename='hand_landmarks.csv'):
-    ##print("hand recognized correctly")
     try:
         with open(filename, mode='a', newline='') as file:
             writer = csv.writer(file)
@@ -63,11 +61,9 @@ def process_images_from_folders(base_path):
                 for image_name in os.listdir(folder_path):
                     image_path = os.path.join(folder_path, image_name)
                     if image_path.endswith(('jpg', 'jpeg', 'png')):
-                        ##print(f"Processing {image_path}")
                         # Read the image
                         image = cv2.imread(image_path)
                         if image is None:
-                            ##print(f"Failed to read {image_path}")
                             continue
                         
                         # Convert the BGR image to RGB
@@ -84,17 +80,6 @@ def process_images_from_folders(base_path):
                                 mp_drawing.draw_landmarks(image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
                                 # Save landmarks to CSV
                                 save_landmarks_to_csv(hand_landmarks, folder_name) 
-                        # if we want to see the images it's reading we display
-                        # the next block of code, but it will flash open a lot
-                        # of images so we better keep it closed. 
-                        '''
-                        # Display the image
-                        cv2.imshow('Hand Gesture Detection', image)
-                        if cv2.waitKey(1) & 0xFF == ord('q'):
-                            break
-
-    cv2.destroyAllWindows()
-'''
 
 # A function that reads a specific folder and gets only one image, 
 # it processes the hands detected in it and sends it to write a csv file 
@@ -107,13 +92,11 @@ def process_image_from_route(path, image_name_to_predict):
     ) as hands:
         for image_name in os.listdir(path):
             image_path = os.path.join(path, image_name)
-            # print(image_name, ' == ', image_name_to_predict)
             if image_path.endswith(('jpg', 'jpeg', 'png')) and image_name == image_name_to_predict:
                 print(f"Processing {image_name_to_predict}")
                 # Read the image
                 image = cv2.imread(image_path)
                 if image is None:
-                     ##print(f"Failed to read {image_path}")
                     continue
                 # Convert the BGR image to RGB
                 rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -144,9 +127,6 @@ def process_image_from_route(path, image_name_to_predict):
 # base_path is the folder where all the imagesets of the letters will be contained.
 # dataset5 contains 5 folders, A, B, C, D E, change the letter according to the csv
 # you'll be creating
-# process_images_from_folders(base_path = 'C')
 
 # Run the processing to detect only the image in the prediction folder that has
 # a specific name
-# process_image_from_route(path = 'prediction', image_name_to_predict = 'test01.png')
-# print("DONE.")
