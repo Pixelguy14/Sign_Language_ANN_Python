@@ -17,7 +17,13 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
 # Load model
-sess = rt.InferenceSession('trained_model.onnx')
+sess = None
+
+def recibir_red(ANN):
+    global sess
+    sess = ANN
+    print(sess)
+    alo()
 
 # Function to preprocess landmarks for the model, 
 # turning them to array of float with one row and n ammount of collumns
@@ -49,57 +55,58 @@ labels = {
     21: "w", 22: "x", 23: "y"
 }
 
-# Initialize webcam
-cap = cv2.VideoCapture(0)
-
 # Process hands and detect landmarks
-with mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=2,
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5
-) as hands:
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        frame = cv2.flip(frame, 1) # 1  = horizontal flip ; 0 =  vertical flip
-        # re_frame = cv2.resize(frame, (82,117)) # size of the training images
-        # Convert the BGR image to RGB
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+def alo():
+    # Initialize webcam
+    cap = cv2.VideoCapture(0)
+    print("alo")
+    with mp_hands.Hands(
+        static_image_mode=False,
+        max_num_hands=2,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5
+    ) as hands:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame = cv2.flip(frame, 1) # 1  = horizontal flip ; 0 =  vertical flip
+            # re_frame = cv2.resize(frame, (82,117)) # size of the training images
+            # Convert the BGR image to RGB
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Process the frame
-        results = hands.process(rgb_frame)
+            # Process the frame
+            results = hands.process(rgb_frame)
 
-        # Draw hand landmarks on the frame and predict gesture
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+            # Draw hand landmarks on the frame and predict gesture
+            if results.multi_hand_landmarks:
+                for hand_landmarks in results.multi_hand_landmarks:
+                    mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-                # Preprocess landmarks and predict gesture
-                # we turn the landmarks to a number array 
-                # then we process and change the prediction to corresponding label
-                landmarks = preprocess_landmarks(hand_landmarks)
-                gesture = predict_gesture(landmarks)
-                gesture_text = f"Gesture: {gesture}"
+                    # Preprocess landmarks and predict gesture
+                    # we turn the landmarks to a number array 
+                    # then we process and change the prediction to corresponding label
+                    landmarks = preprocess_landmarks(hand_landmarks)
+                    gesture = predict_gesture(landmarks)
+                    gesture_text = f"Gesture: {gesture}"
 
-                # Display the predicted gesture on the frame
-                # frame the text will be on
-                # text that's going to be displayed
-                # 10, 30 are the coords for the text
-                # font
-                # font scale (size)
-                # color in BGR
-                # thickness of the font
-                # antialliased text (smooth edges)
-                cv2.putText(frame, gesture_text, (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
+                    # Display the predicted gesture on the frame
+                    # frame the text will be on
+                    # text that's going to be displayed
+                    # 10, 30 are the coords for the text
+                    # font
+                    # font scale (size)
+                    # color in BGR
+                    # thickness of the font
+                    # antialliased text (smooth edges)
+                    cv2.putText(frame, gesture_text, (10, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0), 2, cv2.LINE_AA)
 
-        # Display the frame
-        cv2.imshow('Hand Gesture Detection', frame)
+            # Display the frame
+            cv2.imshow('Hand Gesture Detection', frame)
 
-        # Exit on 'q' key press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            # Exit on 'q' key press
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-cap.release()
-cv2.destroyAllWindows()
+    cap.release()
+    cv2.destroyAllWindows()

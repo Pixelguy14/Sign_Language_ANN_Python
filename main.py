@@ -35,7 +35,8 @@ def test_ANN():
     slpsf.predict_single_file(sess, './predict_landmarks.csv')
 
 def test_ANN_real_time():
-    import sign_language_prediction_real_time
+    import sign_language_prediction_real_time as slprt
+    slprt.get_ANN(sess)
 
 while True:
     print("\n")
