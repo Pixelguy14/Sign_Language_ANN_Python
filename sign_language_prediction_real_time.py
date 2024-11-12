@@ -19,11 +19,10 @@ mp_drawing = mp.solutions.drawing_utils
 # Load model
 sess = None
 
-def recibir_red(ANN):
+def get_ANN(ANN):
     global sess
     sess = ANN
-    print(sess)
-    alo()
+    initializate_prediction()
 
 # Function to preprocess landmarks for the model, 
 # turning them to array of float with one row and n ammount of collumns
@@ -56,13 +55,12 @@ labels = {
 }
 
 # Process hands and detect landmarks
-def alo():
+def initializate_prediction():
     # Initialize webcam
     cap = cv2.VideoCapture(0)
-    print("alo")
     with mp_hands.Hands(
         static_image_mode=False,
-        max_num_hands=2,
+        max_num_hands=1,
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5
     ) as hands:
