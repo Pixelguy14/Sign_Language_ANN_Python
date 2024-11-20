@@ -52,8 +52,8 @@ def overwrite_landmarks_csv(landmarks, prediction='unknown', filename='predict_l
 def process_images_from_folders(base_path):
     with mp_hands.Hands(
         static_image_mode=True,
-        max_num_hands=2,
-        min_detection_confidence=0.5
+        max_num_hands=1,
+        min_detection_confidence=0.1
     ) as hands:
         for folder_name in os.listdir(base_path):
             folder_path = os.path.join(base_path, folder_name)
@@ -87,7 +87,7 @@ def process_images_from_folders(base_path):
 def process_image_from_route(path, image_name_to_predict):
     with mp_hands.Hands(
         static_image_mode=True,
-        max_num_hands=2,
+        max_num_hands=1,
         min_detection_confidence=0.5
     ) as hands:
         for image_name in os.listdir(path):

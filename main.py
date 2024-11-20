@@ -2,6 +2,8 @@ import multilayer_perceptron_training as mpt
 import sign_language_images_to_csv as slitc
 import sign_language_prediction_single_file as slpsf
 import onnxruntime as rt
+import sign_language_prediction_real_time as slprt
+
 
 sess = None
 
